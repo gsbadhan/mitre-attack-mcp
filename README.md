@@ -92,11 +92,11 @@ All tools also accept an optional `domain`: `enterprise-attack`, `ics-attack`, o
 ```
  
 ```
-![Claude Settings](claude-settings.png)
+![Claude Settings](https://raw.githubusercontent.com/gsbadhan/mitre-attack-mcp/main/claude-settings.png)
 
 
 # Claude Desktop Assistant With Mitre MCP
-![Claude Desktop Chat](claude-desktop-chat.png)
+![Claude Desktop Chat](https://raw.githubusercontent.com/gsbadhan/mitre-attack-mcp/main/claude-desktop-chat.png)
 
 
 # Common prompts
