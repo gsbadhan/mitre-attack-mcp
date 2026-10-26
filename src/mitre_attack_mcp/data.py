@@ -140,6 +140,7 @@ class AttackIndex:
         self._mitigates: dict[str, list[str]] = {}
         self._uses: dict[str, list[str]] = {}
         self._relationship_descriptions: dict[tuple[str, str], str | None] = {}
+        self._detection_strategies: dict[str, list[str]] = {}
 
         for obj in self.objects:
             self._index(obj)
@@ -175,6 +176,11 @@ class AttackIndex:
             if isinstance(src, str) and isinstance(tgt, str):
                 self._uses.setdefault(tgt, []).append(src)
                 self._relationship_descriptions[(src, tgt)] = obj.get("description")
+
+        if stix_type == "relationship" and obj.get("relationship_type") == "detects":
+            src, tgt = obj.get("source_ref"), obj.get("target_ref")
+            if isinstance(src, str) and isinstance(tgt, str):
+                self._detection_strategies.setdefault(tgt, []).append(src)
 
     def get_technique(self, attack_id: str) -> dict[str, Any] | None:
         obj = self.by_attack_id.get(attack_id.strip().upper())
@@ -242,6 +248,39 @@ class AttackIndex:
                     "kind": kind,
                     "aliases": actor.get("aliases", []) if kind == "group" else [],
                     "procedure": desc[:800],
+                }
+            )
+        return results
+
+    def detection_strategies_for_technique(
+        self, technique_stix_id: str
+    ) -> list[dict[str, Any]]:
+        """Return detection strategies and their analytics for a technique."""
+        strategy_ids = self._detection_strategies.get(technique_stix_id, [])
+        results: list[dict[str, Any]] = []
+        for sid in strategy_ids:
+            strategy = self.by_stix_id.get(sid)
+            if strategy is None or strategy.get("type") != "x-mitre-detection-strategy":
+                continue
+
+            analytics = []
+            for aid in strategy.get("x_mitre_analytic_refs", []) or []:
+                an = self.by_stix_id.get(aid)
+                if an and an.get("type") == "x-mitre-analytic":
+                    analytics.append(
+                        {
+                            "id": attack_id_of(an),
+                            "name": an.get("name"),
+                            "platforms": an.get("x_mitre_platforms", []),
+                            "description": (an.get("description") or "")[:600],
+                        }
+                    )
+
+            results.append(
+                {
+                    "id": attack_id_of(strategy),
+                    "name": strategy.get("name"),
+                    "analytics": analytics,
                 }
             )
         return results

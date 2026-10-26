@@ -124,6 +124,25 @@ def get_procedures_for_technique(
     return services.get_procedures_for_technique(attack_id, domain=domain)
 
 
+@mcp.tool()
+def get_detections_for_technique(
+    attack_id: str,
+    *,
+    domain: str | None = None,
+) -> dict:
+    """Return detection strategies and analytics for a MITRE ATT&CK technique.
+
+    Use this tool when the user asks how to detect a technique (e.g.
+    "How do I detect T1003?"). Returns each Detection Strategy (DET####)
+    and its platform-specific Analytics (AN####) from the official
+    ATT&CK v18 dataset. Do not answer from memory.
+
+    domain: one of 'enterprise-attack', 'ics-attack', 'mobile-attack'.
+        Omit to search all three.
+    """
+    return services.get_detections_for_technique(attack_id, domain=domain)
+
+
 def main():
     _preStart()
     logging.info("mitre-attack-mcp server starting..")

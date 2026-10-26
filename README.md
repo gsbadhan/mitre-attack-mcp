@@ -7,11 +7,13 @@ A Model Context Protocol server that exposes the MITRE ATT&CK knowledge base to 
 ## What it does
 | Tool | Purpose | Input |
 |------|---------|-------|
-| `get_data_stats` | Counts of techniques, groups, software, mitigations | none |
-| `search_techniques` | Find techniques by keyword | `keyword` |
-| `get_technique_by_id` | Technique details by ID | `attack_id` |
-| `get_mitigations_for_technique` | Mitigations for a technique | `attack_id` |
-| `get_group_by_name` | Threat group details | `name` |
+| `get_data_stats` | Counts of techniques, groups, software, mitigations | optional `domain` |
+| `search_techniques` | Find techniques by keyword in name or description | `keyword`; optional `domain`, `limit` (default 10) |
+| `get_technique_by_id` | Technique details by ID (name, description, tactics, platforms) | `attack_id`; optional `domain` |
+| `get_procedures_for_technique` | Procedure examples: groups and software that used the technique, and how | `attack_id`; optional `domain` |
+| `get_mitigations_for_technique` | Mitigations (MI###) for a technique | `attack_id`; optional `domain` |
+| `get_detections_for_technique` | Detection strategies (DET###) and platform-specific analytics (AN###) | `attack_id`; optional `domain` |
+| `get_group_by_name` | Threat group details by name or alias | `name`; optional `domain` |
 
 All tools also accept an optional `domain`: `enterprise-attack`, `ics-attack`, or `mobile-attack`.
 
@@ -106,6 +108,7 @@ Get the data stats from mitre-attack.
 Look up the group APT29 in mitre-attack.
 Use the mitre-attack server to look up technique T1059.
 what is mitigations for T1003.
+show tactic, procedure, mitigations and detections of T1059 ?
 ```
 
 
