@@ -136,6 +136,8 @@ class AttackIndex:
         self.by_name: dict[str, dict[str, Any]] = {}
         self.by_type: dict[str, list[dict[str, Any]]] = {}
         self.aliases: dict[str, dict[str, Any]] = {}
+        self.by_stix_id: dict[str, dict[str, Any]] = {}
+        self._mitigates: dict[str, list[str]] = {}
         for obj in self.objects:
             self._index(obj)
 
@@ -143,6 +145,10 @@ class AttackIndex:
         stix_type = obj.get("type")
         if stix_type:
             self.by_type.setdefault(stix_type, []).append(obj)
+
+        stix_id = obj.get("id")
+        if isinstance(stix_id, str):
+            self.by_stix_id[stix_id] = obj
 
         name = obj.get("name")
         if isinstance(name, str) and name:
@@ -155,6 +161,11 @@ class AttackIndex:
         for ref in obj.get("external_references", []) or []:
             if ref.get("source_name") == "mitre-attack" and ref.get("external_id"):
                 self.by_attack_id[ref["external_id"].upper()] = obj
+
+        if stix_type == "relationship" and obj.get("relationship_type") == "mitigates":
+            src, tgt = obj.get("source_ref"), obj.get("target_ref")
+            if isinstance(src, str) and isinstance(tgt, str):
+                self._mitigates.setdefault(tgt, []).append(src)
 
     def get_technique(self, attack_id: str) -> dict[str, Any] | None:
         obj = self.by_attack_id.get(attack_id.strip().upper())
@@ -179,6 +190,23 @@ class AttackIndex:
                 if len(hits) >= limit:
                     break
         return hits
+
+    def mitigations_for_technique(self, technique_stix_id: str) -> list[dict[str, Any]]:
+        """Return mitigation objects linked to a technique via 'mitigates' relationships."""
+        source_ids = getattr(self, "_mitigates", {}).get(technique_stix_id, [])
+        results: list[dict[str, Any]] = []
+        for sid in source_ids:
+            obj = self.by_stix_id.get(sid)
+            if obj is None or obj.get("type") != "course-of-action":
+                continue
+            results.append(
+                {
+                    "id": attack_id_of(obj),
+                    "name": obj.get("name"),
+                    "description": (obj.get("description") or "")[:600],
+                }
+            )
+        return results
 
     def counts(self) -> dict[str, int]:
         return {

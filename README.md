@@ -65,6 +65,8 @@ MITRE ATT&amp;CK MCP Server
     }
   }
 
+3. Relaunch Claude
+
 ```
 ![Claude Settings](claude-settings.png)
 
@@ -79,4 +81,5 @@ Search mitre-attack for techniques containing 'credential'.
 Get the data stats from mitre-attack.
 Look up the group APT29 in mitre-attack.
 Use the mitre-attack server to look up technique T1059.
+what is mitigations for T1003.
 ```

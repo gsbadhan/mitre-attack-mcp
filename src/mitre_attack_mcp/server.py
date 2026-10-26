@@ -85,6 +85,25 @@ def get_group_by_name(
     return services.get_group_by_name(name, domain=domain)
 
 
+@mcp.tool()
+def get_mitigations_for_technique(
+    attack_id: str,
+    *,
+    domain: str | None = None,
+) -> dict:
+    """Return MITRE ATT&CK mitigations that apply to a specific technique.
+
+    Use this tool whenever the user asks how to defend against, mitigate,
+    or prevent a technique (e.g. "What mitigations exist for T1003?").
+    Returns each mitigation's ATT&CK ID (M####), name, and description,
+    sourced from the official ATT&CK dataset — do not answer from memory.
+
+    domain: one of 'enterprise-attack', 'ics-attack', 'mobile-attack'.
+        Omit to search all three.
+    """
+    return services.get_mitigations_for_technique(attack_id, domain=domain)
+
+
 def main():
     _preStart()
     logging.info("mitre-attack-mcp server starting..")
