@@ -1,8 +1,16 @@
 """Pure business logic. This module must NOT import `mcp`."""
 
 from __future__ import annotations
-
 from . import data
+import logging
+import sys
+
+logger = logging.getLogger(__name__)
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s %(levelname)s %(name)s: %(message)s",
+    stream=sys.stderr,  # never stdout — that's the JSON-RPC channel
+)
 
 
 def get_data_stats(*, domain: str | None = None) -> dict | list[dict]:
@@ -13,7 +21,10 @@ def get_data_stats(*, domain: str | None = None) -> dict | list[dict]:
     if domain is not None:
         idx = data.get_index(domain)
         return {"domain": domain, **idx.counts()}
-    return [{"domain": d, **data.get_index(d).counts()} for d in data.DOMAINS]
+
+    result = [{"domain": d, **data.get_index(d).counts()} for d in data.DOMAINS]
+    logging.info("results %s=", result)
+    return result
 
 
 def get_technique_by_id(
@@ -54,6 +65,7 @@ def get_technique_by_id(
             "This ID also exists in other domains with different content; "
             "pass `domain` to disambiguate."
         )
+    logging.info("results %s=", result)
     return result
 
 
@@ -78,6 +90,8 @@ def search_techniques(
         )
         if len(results) >= limit:
             break
+
+    logging.info("results %s=", results[:limit])
     return results[:limit]
 
 
@@ -110,4 +124,6 @@ def get_group_by_name(
     }
     if len(matches) > 1:
         result["other_domains"] = [m[0] for m in matches[1:]]
+
+    logging.info("results %s=", result)
     return result
