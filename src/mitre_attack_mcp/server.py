@@ -28,6 +28,7 @@ def get_data_stats(*, domain: str | None = None) -> dict | list[dict]:
     domain: one of 'enterprise-attack', 'ics-attack', 'mobile-attack'.
         Omit to get a per-domain breakdown of all three.
     """
+
     return services.get_data_stats(domain=domain)
 
 
@@ -84,7 +85,7 @@ def get_group_by_name(
     return services.get_group_by_name(name, domain=domain)
 
 
-def startApp():
+def main():
     _preStart()
     logging.info("mitre-attack-mcp server starting..")
     mcp.run()
@@ -92,4 +93,4 @@ def startApp():
 
 
 if __name__ == "__main__":
-    startApp()
+    main()
