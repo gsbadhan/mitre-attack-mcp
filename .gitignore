@@ -1,3 +1,8 @@
+# avoid to commit mitre attack json files
+data/enterprise-attack.json
+data/ics-attack.json
+data/mobile-attack.json
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]
