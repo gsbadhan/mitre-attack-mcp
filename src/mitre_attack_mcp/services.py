@@ -158,3 +158,31 @@ def get_mitigations_for_technique(
     }
     logging.info("results %s=", result)
     return result
+
+
+def get_procedures_for_technique(
+    attack_id: str,
+    *,
+    domain: str | None = None,
+) -> dict:
+    """Return procedure examples (who used a technique and how)."""
+    matches: list[tuple[str, dict]] = []
+    for d in (domain,) if domain else data.DOMAINS:
+        obj = data.get_index(d).get_technique(attack_id)
+        if obj is not None:
+            matches.append((d, obj))
+
+    if not matches:
+        where = domain or "any domain"
+        raise ValueError(f"Technique {attack_id!r} not found in {where}")
+
+    d, tech = matches[0]
+    procedures = data.get_index(d).procedures_for_technique(tech["id"])
+    result = {
+        "domain": d,
+        "technique_id": data.attack_id_of(tech),
+        "technique_name": tech.get("name"),
+        "procedures": procedures,
+    }
+    logging.info("results %s=", result)
+    return result

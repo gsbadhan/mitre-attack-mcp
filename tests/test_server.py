@@ -36,3 +36,15 @@ async def test_mitigations_for_technique(mcp_client):
         data = data["result"]
     ids = {m["id"] for m in data["mitigations"]}
     assert {"M1015", "M1043", "M1026"} <= ids
+
+
+async def test_procedures_for_technique(mcp_client):
+    result = await assert_tool_call(
+        mcp_client, "get_procedures_for_technique", {"attack_id": "T1003"}
+    )
+    data = _payload(result)
+    if set(data.keys()) == {"result"}:
+        data = data["result"]
+    names = {p["name"] for p in data["procedures"]}
+    assert "APT28" in names
+    assert all(p["procedure"] for p in data["procedures"])  # no empty procedures

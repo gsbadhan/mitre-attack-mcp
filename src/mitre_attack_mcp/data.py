@@ -138,6 +138,9 @@ class AttackIndex:
         self.aliases: dict[str, dict[str, Any]] = {}
         self.by_stix_id: dict[str, dict[str, Any]] = {}
         self._mitigates: dict[str, list[str]] = {}
+        self._uses: dict[str, list[str]] = {}
+        self._relationship_descriptions: dict[tuple[str, str], str | None] = {}
+
         for obj in self.objects:
             self._index(obj)
 
@@ -166,6 +169,12 @@ class AttackIndex:
             src, tgt = obj.get("source_ref"), obj.get("target_ref")
             if isinstance(src, str) and isinstance(tgt, str):
                 self._mitigates.setdefault(tgt, []).append(src)
+
+        if stix_type == "relationship" and obj.get("relationship_type") == "uses":
+            src, tgt = obj.get("source_ref"), obj.get("target_ref")
+            if isinstance(src, str) and isinstance(tgt, str):
+                self._uses.setdefault(tgt, []).append(src)
+                self._relationship_descriptions[(src, tgt)] = obj.get("description")
 
     def get_technique(self, attack_id: str) -> dict[str, Any] | None:
         obj = self.by_attack_id.get(attack_id.strip().upper())
@@ -204,6 +213,35 @@ class AttackIndex:
                     "id": attack_id_of(obj),
                     "name": obj.get("name"),
                     "description": (obj.get("description") or "")[:600],
+                }
+            )
+        return results
+
+    def procedures_for_technique(self, technique_stix_id: str) -> list[dict[str, Any]]:
+        """Return procedure examples for a technique."""
+        source_ids = self._uses.get(technique_stix_id, [])
+        results: list[dict[str, Any]] = []
+        for sid in source_ids:
+            actor = self.by_stix_id.get(sid)
+            if actor is None:
+                continue
+            actor_type = actor.get("type")
+            if actor_type == "intrusion-set":
+                kind = "group"
+            elif actor_type in ("malware", "tool"):
+                kind = "software"
+            else:
+                continue
+            desc = self._relationship_descriptions.get((sid, technique_stix_id))
+            if not desc:
+                continue
+            results.append(
+                {
+                    "id": attack_id_of(actor),
+                    "name": actor.get("name"),
+                    "kind": kind,
+                    "aliases": actor.get("aliases", []) if kind == "group" else [],
+                    "procedure": desc[:800],
                 }
             )
         return results

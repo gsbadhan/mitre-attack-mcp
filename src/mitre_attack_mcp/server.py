@@ -104,11 +104,30 @@ def get_mitigations_for_technique(
     return services.get_mitigations_for_technique(attack_id, domain=domain)
 
 
+@mcp.tool()
+def get_procedures_for_technique(
+    attack_id: str,
+    *,
+    domain: str | None = None,
+) -> dict:
+    """Return procedure examples for a MITRE ATT&CK technique.
+
+    Use this tool when the user asks how a technique has been used in the
+    wild — which threat groups or malware employed it, and how. Returns
+    each actor's name, ATT&CK ID (G#### or S####), kind (group/software),
+    and the procedure description from the official ATT&CK dataset.
+    Do not answer from memory.
+
+    domain: one of 'enterprise-attack', 'ics-attack', 'mobile-attack'.
+        Omit to search all three.
+    """
+    return services.get_procedures_for_technique(attack_id, domain=domain)
+
+
 def main():
     _preStart()
     logging.info("mitre-attack-mcp server starting..")
     mcp.run()
-    logging.info("mitre-attack-mcp server started..")
 
 
 if __name__ == "__main__":
