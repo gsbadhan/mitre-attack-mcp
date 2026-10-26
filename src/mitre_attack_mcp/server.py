@@ -143,6 +143,30 @@ def get_detections_for_technique(
     return services.get_detections_for_technique(attack_id, domain=domain)
 
 
+@mcp.tool()
+def get_techniques_by_tactic(
+    tactic: str,
+    *,
+    domain: str | None = None,
+) -> dict:
+    """Return MITRE ATT&CK techniques that belong to a specific tactic.
+
+    Accepts either the tactic ID (TA0001–TA0043) or the shortname
+    (reconnaissance, resource-development, initial-access, execution,
+    persistence, privilege-escalation, defense-evasion, credential-access,
+    discovery, lateral-movement, collection, command-and-control,
+    exfiltration, impact). Both are resolved to the same result.
+
+    Use this tool when the user asks what techniques fall under a tactic,
+    e.g. "What are the Execution techniques?" or "List techniques for TA0006".
+    Do not answer from memory.
+
+    domain: one of 'enterprise-attack', 'ics-attack', 'mobile-attack'.
+        Omit to search all three.
+    """
+    return services.get_techniques_by_tactic(tactic, domain=domain)
+
+
 def main():
     _preStart()
     logging.info("mitre-attack-mcp server starting..")

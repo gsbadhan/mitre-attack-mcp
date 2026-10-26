@@ -214,3 +214,27 @@ def get_detections_for_technique(
     }
     logging.info("results %s=", result)
     return result
+
+
+def get_techniques_by_tactic(
+    tactic: str,
+    *,
+    domain: str | None = None,
+) -> dict:
+    """Return techniques under a tactic (ID like TA0006, or name like credential-access)."""
+    domains = (domain,) if domain else data.DOMAINS
+    for d in domains:
+        if d not in data.DOMAINS:
+            raise ValueError(f"Unknown domain {d!r}; expected one of {data.DOMAINS}")
+
+    results = []
+    for d in domains:
+        idx = data.get_index(d)
+        hits = idx.techniques_by_tactic(tactic)
+        results.extend({"domain": d, **h} for h in hits)
+
+    if not results:
+        raise ValueError(f"No techniques found for tactic {tactic!r}")
+    result = {"tactic": tactic, "techniques": results}
+    logging.info("results %s=", result)
+    return result

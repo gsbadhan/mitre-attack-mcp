@@ -1,12 +1,12 @@
 [project]
 name = "mitre-attack-mcp"
-version = "0.1.2"
+version = "0.1.4"
 description = "MITRE ATT&CK MCP server for AI agents"
 readme = "README.md"
 requires-python = ">=3.11"
 license = { text = "Apache-2.0" }
 authors = [{ name = "gsbadhan" }]
-keywords = ["mcp", "mitre", "attack", "threat-intelligence", "security", "ai"]
+keywords = ["mcp", "mitre-attack", "threat-intelligence", "cybersecurity", "ai", "agent"]
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Developers",

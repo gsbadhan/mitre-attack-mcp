@@ -2,7 +2,8 @@
 MITRE ATT&amp;CK MCP Server
 
 # Description
-A Model Context Protocol server that exposes the MITRE ATT&CK knowledge base to AI agents such as Claude Desktop and Claude Code. PyPi - https://pypi.org/project/mitre-attack-mcp, githib- https://github.com/gsbadhan/mitre-attack-mcp .
+A Model Context Protocol server that exposes the MITRE ATT&CK knowledge base to AI agents such as Claude Desktop, Claude Code and LangGraph. Use for Technique, Procedure, Mitigation and Detection lookups. PyPi - https://pypi.org/project/mitre-attack-mcp, Githib - https://github.com/gsbadhan/mitre-attack-mcp .
+
 
 ## What it does
 | Tool | Purpose | Input |

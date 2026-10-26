@@ -141,6 +141,7 @@ class AttackIndex:
         self._uses: dict[str, list[str]] = {}
         self._relationship_descriptions: dict[tuple[str, str], str | None] = {}
         self._detection_strategies: dict[str, list[str]] = {}
+        self._tactic_id_to_name: dict[str, str] = {}
 
         for obj in self.objects:
             self._index(obj)
@@ -181,6 +182,12 @@ class AttackIndex:
             src, tgt = obj.get("source_ref"), obj.get("target_ref")
             if isinstance(src, str) and isinstance(tgt, str):
                 self._detection_strategies.setdefault(tgt, []).append(src)
+
+        if stix_type == "x-mitre-tactic":
+            attack_id = attack_id_of(obj)
+            shortname = obj.get("x_mitre_shortname")
+            if attack_id and shortname:
+                self._tactic_id_to_name[attack_id.upper()] = shortname
 
     def get_technique(self, attack_id: str) -> dict[str, Any] | None:
         obj = self.by_attack_id.get(attack_id.strip().upper())
@@ -283,6 +290,36 @@ class AttackIndex:
                     "analytics": analytics,
                 }
             )
+        return results
+
+    def techniques_by_tactic(self, tactic: str) -> list[dict[str, Any]]:
+        """Return techniques under a tactic, given its ID (TA0006) or shortname (credential-access)."""
+        raw = tactic.strip()
+        # If it looks like an ID (TA followed by digits), resolve to shortname
+        if raw.upper().startswith("TA") and raw[2:].isdigit():
+            target = self._tactic_id_to_name.get(raw.upper())
+            if target is None:
+                return []  # unknown tactic ID
+        else:
+            # Treat as a name: "Credential Access" -> "credential-access"
+            target = raw.lower().replace(" ", "-").replace("_", "-")
+
+        results: list[dict[str, Any]] = []
+        for obj in self.by_type.get("attack-pattern", []):
+            phases = obj.get("kill_chain_phases", []) or []
+            if any(
+                p.get("kill_chain_name") == "mitre-attack"
+                and p.get("phase_name") == target
+                for p in phases
+            ):
+                results.append(
+                    {
+                        "id": attack_id_of(obj),
+                        "name": obj.get("name"),
+                        "is_subtechnique": obj.get("x_mitre_is_subtechnique", False),
+                        "platforms": obj.get("x_mitre_platforms", []),
+                    }
+                )
         return results
 
     def counts(self) -> dict[str, int]:
