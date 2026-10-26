@@ -2,6 +2,18 @@
 MITRE ATT&amp;CK MCP Server
 
 # Description
+A Model Context Protocol server that exposes the MITRE ATT&CK knowledge base to AI agents such as Claude Desktop and Claude Code. PyPi - https://pypi.org/project/mitre-attack-mcp, githib- https://github.com/gsbadhan/mitre-attack-mcp .
+
+## What it does
+| Tool | Purpose | Input |
+|------|---------|-------|
+| `get_data_stats` | Counts of techniques, groups, software, mitigations | none |
+| `search_techniques` | Find techniques by keyword | `keyword` |
+| `get_technique_by_id` | Technique details by ID | `attack_id` |
+| `get_mitigations_for_technique` | Mitigations for a technique | `attack_id` |
+| `get_group_by_name` | Threat group details | `name` |
+
+All tools also accept an optional `domain`: `enterprise-attack`, `ics-attack`, or `mobile-attack`.
 
 
 # Project setup
@@ -19,7 +31,7 @@ MITRE ATT&amp;CK MCP Server
 # Unit tests
 - uv run pytest tests/ -v
 
-# Integration with Anthropic claude CLI
+# Integration With Anthropic Claude Code
 ```
 1. Clone code repository locally
 
@@ -47,11 +59,11 @@ MITRE ATT&amp;CK MCP Server
 6. Check detail: claude mcp get mitre-attack
 
 ```
-# Integration with Anthropic claude desktop
+# Integration with Anthropic Claude Desktop
 ```
 1. Claude desktop -> Settings -> Developer -> Edit config
 
-2. Add below configs:
+2. Add below configs if you using git repository code:
 
   "mcpServers": {
     "mitre-attack": {
@@ -65,8 +77,20 @@ MITRE ATT&amp;CK MCP Server
     }
   }
 
+2. Add below configs if you using PyPi:
+
+ "mcpServers": {
+    "mitre-attack": {
+      "command": "uvx",
+      "args": ["mitre-attack-mcp@latest"]
+    }
+  }
+
 3. Relaunch Claude
 
+```
+```
+ 
 ```
 ![Claude Settings](claude-settings.png)
 
@@ -83,3 +107,5 @@ Look up the group APT29 in mitre-attack.
 Use the mitre-attack server to look up technique T1059.
 what is mitigations for T1003.
 ```
+
+
