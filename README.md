@@ -2,7 +2,7 @@
 MITRE ATT&amp;CK MCP Server
 
 # Description
-A Model Context Protocol server that exposes the MITRE ATT&CK knowledge base to AI agents such as Claude Desktop, Claude Code and LangGraph. Use for Technique, Procedure, Mitigation and Detection lookups. PyPi - https://pypi.org/project/mitre-attack-mcp, Githib - https://github.com/gsbadhan/mitre-attack-mcp .
+A Model Context Protocol server that exposes the MITRE ATT&CK knowledge base to AI agents such as Claude Desktop, Claude Code and LangGraph. Use for Tactic, Technique, Procedure, Mitigation and Detection lookups. PyPi - https://pypi.org/project/mitre-attack-mcp, Githib - https://github.com/gsbadhan/mitre-attack-mcp .
 
 
 ## What it does
@@ -11,9 +11,10 @@ A Model Context Protocol server that exposes the MITRE ATT&CK knowledge base to 
 | `get_data_stats` | Counts of techniques, groups, software, mitigations | optional `domain` |
 | `search_techniques` | Find techniques by keyword in name or description | `keyword`; optional `domain`, `limit` (default 10) |
 | `get_technique_by_id` | Technique details by ID (name, description, tactics, platforms) | `attack_id`; optional `domain` |
+| `get_techniques_by_tactic` | Techniques belonging to a tactic (by ID like `TA0006` or shortname like `execution`) | `tactic`; optional `domain` |
 | `get_procedures_for_technique` | Procedure examples: groups and software that used the technique, and how | `attack_id`; optional `domain` |
-| `get_mitigations_for_technique` | Mitigations (MI###) for a technique | `attack_id`; optional `domain` |
-| `get_detections_for_technique` | Detection strategies (DET###) and platform-specific analytics (AN###) | `attack_id`; optional `domain` |
+| `get_mitigations_for_technique` | Mitigations (M####) for a technique | `attack_id`; optional `domain` |
+| `get_detections_for_technique` | Detection strategies (DET####) and platform-specific analytics (AN####) | `attack_id`; optional `domain` |
 | `get_group_by_name` | Threat group details by name or alias | `name`; optional `domain` |
 
 All tools also accept an optional `domain`: `enterprise-attack`, `ics-attack`, or `mobile-attack`.
